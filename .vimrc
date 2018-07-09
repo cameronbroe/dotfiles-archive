@@ -21,7 +21,67 @@ Plug 'Townk/vim-autoclose'
 Plug 'ervandew/supertab'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
+Plug 'vim-scripts/restore_view.vim'
 call plug#end()
+
+" General configuration
+syntax on
+set number
+set mouse=a
+
+" Try and load color scheme
+try
+	colorscheme molokai
+catch
+endtry
+
+set history=500
+filetype plugin on
+filetype indent on
+
+set autoread
+
+let mapleader = ","
+nmap <leader>w :w!<cr>
+command W w !sudo tee % > /dev/null
+
+" Auto save folds
+autocmd BufWinLeave *.* mkview
+autocmd BufWinEnter *.* silent loadview
+
+" UI configuration
+set ruler
+set cmdheight=2
+
+set wildmenu
+
+" Ignore compiled files
+set wildignore=*.o,*~,*.pyc
+if has("win16") || has("win32")
+    set wildignore+=.git\*,.hg\*,.svn\*
+else
+    set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
+endif
+
+set backspace=eol,start,indent
+set whichwrap+=<,>,h,l
+
+set magic
+
+set foldcolumn=1
+
+" Editing/display configuration
+set expandtab
+
+set smarttab
+
+set shiftwidth=4
+set tabstop=4
+set ai
+set si
+set wrap
+set lbr
+set tw=500
 
 " NERDTree configuration
 map <C-e> :NERDTreeToggle<CR>
@@ -31,8 +91,4 @@ autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 let NERDTreeShowHidden=1
 
-" General configuration
-syntax on
-set number
-set mouse=a
-colorscheme molokai
+ 
