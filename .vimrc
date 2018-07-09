@@ -1,6 +1,4 @@
-syntax on
-set number
-set mouse=a
+set nocompatible " vim mode!
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -12,6 +10,17 @@ Plug 'scrooloose/nerdtree'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'flazz/vim-colorschemes'
+Plug 'Shougo/vimproc.vim', {'do' : 'make'}
+Plug 'Quramy/tsuquyomi'
+Plug 'leafgarland/typescript-vim'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'jlanzarotta/bufexplorer'
+Plug 'vim-scripts/a.vim'
+Plug 'vim-airline/vim-airline'
+Plug 'Townk/vim-autoclose'
+Plug 'ervandew/supertab'
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
 call plug#end()
 
 " NERDTree configuration
