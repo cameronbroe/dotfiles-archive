@@ -30,7 +30,7 @@ set mouse=a
 
 " Try and load color scheme
 try
-	colorscheme molokai
+	colorscheme Benokai
 catch
 endtry
 
