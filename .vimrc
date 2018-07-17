@@ -12,7 +12,8 @@ Plug 'flazz/vim-colorschemes'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'Quramy/tsuquyomi'
 Plug 'leafgarland/typescript-vim'
-Plug 'editorconfig/editorconfig-vim'
+" Plug 'editorconfig/editorconfig-vim'
+Plug 'sgur/vim-editorconfig'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'vim-scripts/a.vim'
 Plug 'vim-airline/vim-airline'
@@ -21,12 +22,24 @@ Plug 'ervandew/supertab'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'vim-scripts/restore_view.vim'
+Plug 'pangloss/vim-javascript'
 call plug#end()
 
 " General configuration
 syntax on
 set number
 set mouse=a
+set cursorline
+
+" yank to clipboard
+if has("clipboard")
+  set clipboard=unnamed " copy to the system clipboard
+
+  "if has("unnamedplus") " X11 support
+  "  set clipboard+=unnamedplus
+  "endif
+endif
+
 
 " Try and load color scheme
 try
@@ -65,7 +78,7 @@ endif
 set backspace=eol,start,indent
 set whichwrap+=<,>,h,l
 
-set magic
+" set magic
 
 set foldcolumn=1
 
@@ -89,4 +102,11 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 let NERDTreeShowHidden=1
+
+" Airline configuration
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#fnamemod = ':t'
+
+" BufExplorer configuration
+map <C-t> :ToggleBufExplorer<CR>
 
