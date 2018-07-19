@@ -40,7 +40,6 @@ if has("clipboard")
   "endif
 endif
 
-
 " Try and load color scheme
 try
 	colorscheme Benokai
@@ -110,3 +109,18 @@ let g:airline#extensions#tabline#fnamemod = ':t'
 " BufExplorer configuration
 map <C-t> :ToggleBufExplorer<CR>
 
+" Ruby commands set up {{{
+if has("ruby")
+ruby << EOF
+
+# This is relative to the dotfiles repo
+SCRIPT_DIR = "./ruby_scripts"
+
+# Get resolved Vimrc directory to get to my dotfiles repo
+vim_rc_dir = Vim::evaluate("resolve(expand($MYVIMRC))")
+
+
+
+EOF
+endif
+" }}}
