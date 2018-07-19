@@ -1,10 +1,14 @@
 set nocompatible " vim mode!
+
+" Download plug-vim if not already {{{
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
+" }}}
 
+" Plugins {{{
 call plug#begin('~/.vim/bundle')
 Plug 'scrooloose/nerdtree'
 Plug 'ctrlpvim/ctrlp.vim'
@@ -24,12 +28,26 @@ Plug 'airblade/vim-gitgutter'
 Plug 'vim-scripts/restore_view.vim'
 Plug 'pangloss/vim-javascript'
 call plug#end()
+" }}}
 
-" General configuration
+" Vimscript file settings {{{
+augroup filetype_vim
+    autocmd!
+    autocmd FileType vim setlocal foldmethod=marker
+augroup END
+" }}}
+
+" General configuration {{{
 syntax on
 set number
 set mouse=a
 set cursorline
+
+inoremap jj <esc>
+
+" highlighting searches
+set hlsearch
+set incsearch
 
 " yank to clipboard
 if has("clipboard")
@@ -61,7 +79,18 @@ command W w !sudo tee % > /dev/null
 autocmd BufWinLeave *.* mkview
 autocmd BufWinEnter *.* silent loadview
 
-" UI configuration
+" Some cool things
+" Quick vimrc editing
+nnoremap <leader>ev :e $MYVIMRC<cr>
+" Quick vimrc reload
+nnoremap <leader>sv :source $MYVIMRC<cr>
+
+" Toggle line numbers in buffer
+nnoremap <leader>l :set number!<cr>
+
+" }}}
+
+" UI configuration {{{
 set ruler
 set cmdheight=2
 
@@ -94,19 +123,32 @@ set si
 set wrap
 set lbr
 set tw=500
+" }}}
 
-" NERDTree configuration
+
+" Set :Q and :wQ to actually exit
+" cnoreabbrev Q q
+" cnoreabbrev wQ wq
+" 
+" " Set :q and :wq to only close buffer
+" cnoreabbrev q bd
+" cnoreabbrev wq w<bar>bd
+
+" NERDTree configuration {{{
 map <C-e> :NERDTreeToggle<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 let NERDTreeShowHidden=1
+" }}}
 
-" Airline configuration
+" Airline configuration {{{
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#fnamemod = ':t'
+" }}}
 
-" BufExplorer configuration
+" BufExplorer configuration {{{
 map <C-t> :ToggleBufExplorer<CR>
+" }}}
 
