@@ -155,38 +155,49 @@ map <C-t> :ToggleBufExplorer<CR>
 if has("ruby")
 function! s:ExecuteRb(...) 
 ruby << EOF
+module VimScripts; end
 
 # This is relative to the dotfiles repo
-SCRIPT_DIR = "ruby_scripts"
+script_dir = "/ruby-scripts"
 
 # Get resolved Vimrc directory to get to my dotfiles repo
-vim_rc_dir = Pathname.new(Vim::evaluate("resolve(expand($MYVIMRC))"))
-ruby_script_glob = (vim_rc_dir.realdirpath + SCRIPT_DIR).to_s + '/*.rb'
+vim_rc_dir = Vim::evaluate("resolve(expand($MYVIMRC))")
+ruby_script_glob = (File.dirname(vim_rc_dir) + script_dir).to_s + '/*.rb'
 
 ruby_files = Dir.glob(ruby_script_glob)
 ruby_files.each do |rb|
-    load rb
+	Vim::command("echom 'Loading #{rb}'")
+    require rb
 end
 
 def invoke_method(scope, name, args)
-    s_methods = (VimScripts.methods - Module.methods).map { |m| m.to_s }
+    s_methods = (scope.methods - Module.methods).map { |m| m.to_s }
     if s_methods.include? name
         scope.send(name, *args)
     end
 end
 
+args = Vim::evaluate("a:000")
+
 if args.length > 1
-s_classes = {}
-VimScripts.constants.each do |c|
-    if args.first == c.to_s.downcase
-	class_obj = VimScripts.const_get(c)
-	invoke_methods(class_obj, args.second, args[2..-1])
-    end
+	ran_class = false
+	VimScripts.constants.each do |c|
+		if args.first == c.to_s.downcase
+			class_obj = VimScripts.const_get(c)
+			invoke_method(class_obj, args[1], args[2..-1])
+			ran_class = true
+		end
+	end
+	unless ran_class
+		invoke_method(VimScripts, args.first, args[1..-1])
+	end
+elsif args.length == 1
+    invoke_method(VimScripts, args.first, args[1..-1])
 end
-else if args.length == 1
-    invoke_methods(VimScripts, args.first, args[1..-1])
-end
+
 EOF
 endfunction
+
+command! -nargs=* Rbc call s:ExecuteRb(<f-args>)
 endif
 " }}}
