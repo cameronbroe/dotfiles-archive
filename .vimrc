@@ -111,16 +111,40 @@ map <C-t> :ToggleBufExplorer<CR>
 
 " Ruby commands set up {{{
 if has("ruby")
+function! s:ExecuteRb(...) 
 ruby << EOF
 
 # This is relative to the dotfiles repo
-SCRIPT_DIR = "./ruby_scripts"
+SCRIPT_DIR = "ruby_scripts"
 
 # Get resolved Vimrc directory to get to my dotfiles repo
-vim_rc_dir = Vim::evaluate("resolve(expand($MYVIMRC))")
+vim_rc_dir = Pathname.new(Vim::evaluate("resolve(expand($MYVIMRC))"))
+ruby_script_glob = (vim_rc_dir.realdirpath + SCRIPT_DIR).to_s + '/*.rb'
 
+ruby_files = Dir.glob(ruby_script_glob)
+ruby_files.each do |rb|
+    load rb
+end
 
+def invoke_method(scope, name, args)
+    s_methods = (VimScripts.methods - Module.methods).map { |m| m.to_s }
+    if s_methods.include? name
+        scope.send(name, *args)
+    end
+end
 
+if args.length > 1
+s_classes = {}
+VimScripts.constants.each do |c|
+    if args.first == c.to_s.downcase
+	class_obj = VimScripts.const_get(c)
+	invoke_methods(class_obj, args.second, args[2..-1])
+    end
+end
+else if args.length == 1
+    invoke_methods(VimScripts, args.first, args[1..-1])
+end
 EOF
+endfunction
 endif
 " }}}
