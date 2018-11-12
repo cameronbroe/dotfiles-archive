@@ -27,7 +27,11 @@ Plug 'vim-scripts/restore_view.vim'
 Plug 'pangloss/vim-javascript'
 Plug 'w0rp/ale' 
 Plug 'mileszs/ack.vim'
-Plug 'Shougo/denite.nvim'
+Plug 'ryanoasis/vim-devicons'
+Plug 'majutsushi/tagbar'
+Plug 'gauteh/vim-cppman'
+Plug 'tpope/vim-surround'
+Plug 'rizzatti/dash.vim'
 
 " Deoplete
 if has('nvim')
@@ -47,6 +51,7 @@ Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',
     \ 'do': 'bash install.sh',
     \ }
+Plug 'mhartington/nvim-typescript', { 'do': './install.sh' }
 
 Plug 'vim-scripts/ScrollColors'
 
@@ -64,6 +69,7 @@ let g:cpp_member_variable_highlight = 1
 let g:cpp_class_decl_highlight = 1
 let g:cpp_experimental_template_highlight = 1
 let g:cpp_concepts_highlight = 1
+
 " }}}
 
 " Python advanced syntax {{{
@@ -83,7 +89,6 @@ set hidden
 
 let g:LanguageClient_serverCommands = {
     \ 'javascript': ['javascript-typescript-stdio'],
-    \ 'typescript': ['javascript-typescript-stdio'],
     \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
     \ }
 
@@ -110,6 +115,8 @@ syntax on
 set number
 set mouse=a
 set cursorline
+
+nnoremap <leader>tb :TagbarToggle<CR>
 
 inoremap jj <esc>
 
@@ -156,11 +163,7 @@ set autoread
 
 let mapleader = ","
 nmap <leader>w :w!<cr>
-command W w !sudo tee % > /dev/null
-
-" Auto save folds
-autocmd BufWinLeave *.* mkview
-autocmd BufWinEnter *.* silent loadview
+command! W w !sudo tee % > /dev/null
 
 " Some cool things
 " Quick vimrc editing
@@ -173,6 +176,9 @@ nnoremap <leader>l :set number!<cr>
 
 " Toggle relative numbers in buffer
 nnoremap <leader>r :set relativenumber!<cr>
+
+" Dash key binding
+nmap <silent> <leader>d <Plug>DashSearch
 
 " }}}
 
@@ -190,10 +196,12 @@ else
     set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
 endif
 
+set completeopt+=preview
+
 set backspace=eol,start,indent
 set whichwrap+=<,>,h,l
 
-" set magic
+set magic
 
 set foldcolumn=1
 
@@ -214,10 +222,13 @@ set tw=500
 
 " NERDTree configuration {{{
 map <C-e> :NERDTreeToggle<CR>
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+augroup nerd_tree
+    autocmd!
+    autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+    autocmd StdinReadPre * let s:std_in=1
+    autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+    autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+augroup end
 let NERDTreeShowHidden=1
 let g:NERDTreeChDirMode = 2
 " }}}
@@ -283,4 +294,58 @@ endif
 
 " FZF configuration {{{
 nnoremap <c-p> :FZF<cr>
+" }}}
+
+" TS Ctags {{{
+let g:tagbar_type_typescript = {                                                  
+  \ 'ctagsbin' : 'tstags',                                                        
+  \ 'ctagsargs' : '-f-',                                                           
+  \ 'kinds': [                                                                     
+    \ 'e:enums:0:1',                                                               
+    \ 'f:function:0:1',                                                            
+    \ 't:typealias:0:1',                                                           
+    \ 'M:Module:0:1',                                                              
+    \ 'I:import:0:1',                                                              
+    \ 'i:interface:0:1',                                                           
+    \ 'C:class:0:1',                                                               
+    \ 'm:method:0:1',                                                              
+    \ 'p:property:0:1',                                                            
+    \ 'v:variable:0:1',                                                            
+    \ 'c:const:0:1',                                                              
+  \ ],                                                                            
+  \ 'sort' : 0                                                                    
+\ }  
+" }}}
+
+" Nvim Terminal remappings {{{
+if has('nvim')
+  tnoremap <Esc> <C-\><C-n>
+  tnoremap <M-[> <Esc>
+  tnoremap <C-v><Esc> <Esc>
+endif
+" }}}
+
+" Nvim Meta Window mappings {{{
+if has('nvim')
+  " Terminal mode:
+  tnoremap <M-h> <c-\><c-n><c-w>h
+  tnoremap <M-j> <c-\><c-n><c-w>j
+  tnoremap <M-k> <c-\><c-n><c-w>k
+  tnoremap <M-l> <c-\><c-n><c-w>l
+  " Insert mode:
+  inoremap <M-h> <Esc><c-w>h
+  inoremap <M-j> <Esc><c-w>j
+  inoremap <M-k> <Esc><c-w>k
+  inoremap <M-l> <Esc><c-w>l
+  " Visual mode:
+  vnoremap <M-h> <Esc><c-w>h
+  vnoremap <M-j> <Esc><c-w>j
+  vnoremap <M-k> <Esc><c-w>k
+  vnoremap <M-l> <Esc><c-w>l
+  " Normal mode:
+  nnoremap <M-h> <c-w>h
+  nnoremap <M-j> <c-w>j
+  nnoremap <M-k> <c-w>k
+  nnoremap <M-l> <c-w>l
+endif
 " }}}
